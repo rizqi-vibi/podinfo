@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: %{SERVICE_NAME}
+spec:
+  replicas: %{POD_REPLICA}
+  selector:
+    matchLabels:
+      app: %{SERVICE_NAME}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9797"
+      labels:
+        app: %{SERVICE_NAME}
+    spec:
+      containers:
+      - name: %{SERVICE_NAME}
+        image: %{IMAGE_URL}:%{TAG}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: %{PORT}
+          protocol: TCP
+        - name: http-metrics
+          containerPort: 9797
+          protocol: TCP
+        - name: grpc
+          containerPort: 9999
+          protocol: TCP
+        command:
+        - ./podinfo
+        - --port=%{PORT}
+        - --port-metrics=9797
+        - --grpc-port=9999
+        - --grpc-service-name=%{SERVICE_NAME}
+        - --level=info
+        - --random-delay=false
+        - --random-error=false
+        env:
+        - name: PODINFO_UI_COLOR
+          value: "#34577c"
+        livenessProbe:
+          exec:
+            command:
+            - podcli
+            - check
+            - http
+            - localhost:%{PORT}/healthz
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - podcli
+            - check
+            - http
+            - localhost:%{PORT}/readyz
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        resources:
+          requests:
+            memory: "%{REQ_MEMORY}"
+            cpu: "%{REQ_CPU}"
+          limits:
+            memory: "%{LIMIT_MEMORY}"
+            cpu: "%{LIMIT_CPU}"  
