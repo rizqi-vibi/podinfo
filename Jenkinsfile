@@ -51,7 +51,7 @@ pipeline {
 
     environment {
         serviceName = "${JOB_NAME}".split('/').first()
-        cluster="dkf-cluster"
+        cluster= "dkf-cluster"
         crUri = "dki-images-registry-vpc.ap-southeast-5.cr.aliyuncs.com/dki/${serviceName}"
         crCred = "cr-auth"
         registry= "dki-images-registry-vpc.ap-southeast-5.cr.aliyuncs.com"
