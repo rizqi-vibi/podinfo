@@ -56,7 +56,7 @@ pipeline {
         crCred = "cr-auth"
         registry= "dki-images-registry-vpc.ap-southeast-5.cr.aliyuncs.com"
         imageName = "${crUri}"
-        gitRepository = "github.com/kinifinance-dev/${serviceName}.git"
+        gitRepository = "github.com/rizqi-vibi/${serviceName}.git"
         gitCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
         shortCommitHash = gitCommitHash.take(7)
         // limit Memory and CPU development & staging
@@ -77,7 +77,7 @@ pipeline {
                     if (env.GIT_BRANCH.contains("feature") || env.GIT_BRANCH.contains("hotfix") || env.GIT_BRANCH.contains("bugfix") || env.GIT_BRANCH.contains("root")) {
                         env.versioningCode = "sn" // sn = snapshot -> for service_name k8s and versioning
                         env.alphaNS = "development"
-                    } else if (env.GIT_BRANCH.contains("master")){
+                    } else if (env.GIT_BRANCH.contains("main")){
                         env.versioningCode = "rc" // rc = release candidate -> for service_name k8s and versioning
                         env.alphaNS = "staging"
                     } else {
